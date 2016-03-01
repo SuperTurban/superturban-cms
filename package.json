@@ -1,11 +1,16 @@
 {
   "name": "superturban-cms",
-  "version": "1.0.0",
-  "description": "0.0.1",
+  "version": "0.0.1",
+  "description": "Simple cms for Simple pages",
   "main": "index.js",
+  "private": true,
   "scripts": {
     "test": "test-all"
   },
   "author": "Tambet Uutsalu",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.13.4",
+    "monk": "^1.0.1"
+  }
 }
