@@ -1,118 +1,126 @@
-var express = require('express');
-var router = express.Router();
-var jwt = require('jsonwebtoken');
+module.exports = function(app,express){
+
+	var router = express.Router();
+	var jwt = require('jsonwebtoken');
 
 
+	app.use(['/install', '/api/auth'],function(req,res,next){
+		req.hashing = require('./../util/hashing');
+		next();
+	});
+
+	app.use('/api/admin/',function(req, res, next) {
+
+	  var token = req.body.token;
+
+	  if (!token)
+	  	return res.status(403).send({success:false, message:'Permission denied!'}); 
+
+	  	jwt.verify(token, app.get('jwtsecret'), function(err, decoded) {      
+	  	    if (err) 
+	    	    return res.json({ success: false, message: 'Failed to authenticate token.' });    
+
+	    	req.decoded = decoded;    
+	    	next();
+	  	});
+	 });
+
+	/***********************
+	======TEST ROUTES=======
+	***********************/
+
+	router.get('/test', function(req, res) {
+	    res.json({ title: 'Express' });
+	});
 
 
+	router.get('/install', function(req,res){
+		var username = 'admin';
+		var user_pw = 'adminpass';
 
-//==============
-//==TEST ROUTES=
-//==============
+		var hashing = req.hashing;
 
-router.get('/test', function(req, res) {
-    res.json({ title: 'Express' });
-});
+		var collection = app.db.get('users');
 
-router.get('/add',function(req,res){
-	var db = req.db;
-	var collection = db.get('atest');
+		var hashingResult = hashing.hash(user_pw);
 
-	collection.insert({
-		"username" : '123',
-		"password" : '123123123',
-	},function(err,doc){
-			if(err)
-				res.json({failure:true});
+		var user = {
+			username : username,
+			user_pw : user_pw,
+			password : hashingResult.hash,
+			salt : hashingResult.salt,
+			permissions : ['all'], 
 		}
-	);
 
-	res.json({'success':true})
-});
+		var usersCollection = app.db.get('users');
+		usersCollection.insert(
+			user,
+			function(err,doc){
+				if(err)
+					res.json({failure:true,err:err});
+			}
+		);
 
-router.get('/read',function(req,res){
-	var db = req.db;
-	var collection = db.get('users');
+		res.json(user);
+	});
 
-    collection.find({},{},function(e,docs){
-    	res.json(docs);
-    });
-});
+	router.get('/api/pages',function(req,res){
+		  var usersCollection = app.db.get('pages');
+		  usersCollection.find({},{},function(e,docs){
+		  	res.json(docs);
+		  });
+	});
 
+	router.get('/api/fields',function(req,res){
+		  var usersCollection = app.db.get('fields');
+		  usersCollection.find({},{},function(e,docs){
+		  	res.json(docs);
+		  });
+	});
 
+	/***********************
+	======ADMIN ROUTES======
+	***********************/
 
-router.get('/install', function(req,res){
-	var username = 'admin';
-	var user_pw = 'adminpass';
-
-	var db = req.db;
-	var hashing = req.hashing;
-
-	var collection = db.get('users');
-
-	var hashingResult = hashing.hash(user_pw);
-
-	var user = {
-		username : username,
-		user_pw : user_pw,
-		password : hashingResult.hash,
-		salt : hashingResult.salt,
-		permissions : ['all'], 
-	}
-
-	var usersCollection = db.get('users');
-	usersCollection.insert(
-		user,
-		function(err,doc){
-			if(err)
-				res.json({failure:true,err:err});
-		}
-	);
-
-	res.json(user);
-});
-
-//===============
-//==ADMIN ROUTES=
-//===============
-
-router.post('/api/auth', function(req, res) {
+	router.post('/api/auth', function(req, res) {
 
 
-  var db = req.db;
-  var usersCollection = db.get('users');
+	  var usersCollection = app.db.get('users');
 
-  usersCollection.findOne({username : req.body.username},{},function(e,docs){
-  	console.log(docs);
-  	   var user = {
-  	   		username : docs.username,
-  	   		id : docs._id,
-  	   }
+	  usersCollection.findOne({username : req.body.username},{},function(e,docs){
+	  	console.log(docs);
+	  	   var user = {
+	  	   		username : docs.username,
+	  	   		id : docs._id,
+	  	   }
 
-  	   if(!user)
-  	   		return res.json({'success': false, 'message':'No user'});	
+	  	   if(!user)
+	  	   		return res.json({'success': false, 'message':'No user'});	
 
-  	   if(!req.hashing.validateHash(docs.password, docs.salt, req.body.password ))
-  	   		return res.json({'success':false, 'message': 'wrong password'});
+	  	   if(!req.hashing.validateHash(docs.password, docs.salt, req.body.password ))
+	  	   		return res.json({'success':false, 'message': 'wrong password'});
 
-	   var token = jwt.sign(user, app.get('jwtsecret'), {
-	         expiresIn:1200 
+		   var token = jwt.sign(user, app.get('jwtsecret'), {
+		         expiresIn:1200 
+		    });
+
+		    res.json({
+		      success: true,
+		      id : user.id,
+		      username : user.username,
+		      message: 'Enjoy your token!',
+		      token: token
+		    });
+
 	    });
+	});
 
-	    res.json({
-	      success: true,
-	      id : user.id,
-	      username : user.username,
-	      message: 'Enjoy your token!',
-	      token: token
-	    });
+	router.post('/api/admin',function(req,res){
+		res.json({success:true,username: req.decoded.username});
+	});
 
-    });
-});
+	return router;
 
-router.post('/api/admin',function(req,res){
-	res.json({success:true,username: req.decoded.username});
-});
+}
 
 
-module.exports = router;

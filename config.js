@@ -1,7 +1,3 @@
 module.exports = {
-	db : {
-		name : 'base',
-		host : 'localhost',
-		port : 27017
-	}
+	db : 'localhost:27017/base',
 }
