@@ -64,11 +64,53 @@ module.exports = function(app,express){
 		res.json(user);
 	});
 
+
+	/***********************
+	======API ROUTES=======
+	***********************/
+
+	/**
+		get /api/pages/
+		get /api/pages/:id
+		post /api/pages/create
+		post /api/pages/:id/delete	
+		post /api/pages/:id/update	
+	**/
+	var pageFactory = require('./../models/page.js');
+	var entRepo = require('./../repositories/entity-repository.js');
+
 	router.get('/api/pages',function(req,res){
-		  var usersCollection = app.db.get('pages');
-		  usersCollection.find({},{},function(e,docs){
-		  	res.json(docs);
-		  });
+		var pageRepo = new entRepo(pageFactory);
+
+		pageRepo.getEntities(function(pages){
+			res.json(pages);
+		});
+	});
+
+	router.get('/api/pages/:key',function(req,res){
+		var pageRepo = new entRepo(pageFactory);
+
+		pageRepo.getEntityByKey(function(page){
+			res.json(page);
+		});
+	});
+
+
+	router.post('/api/pages/:key/delete',function(req,res){
+		var pageRepo = new entRepo(pageFactory);
+
+		pageRepo.getEntityByKey(function(page){
+			page.delete();
+		});
+	});
+
+
+	router.get('/api/pages/:key',function(req,res){
+		var pageRepo = new entRepo(pageFactory);
+
+		pageRepo.getEntityByKey(function(page){
+			res.json(page);
+		});
 	});
 
 	router.get('/api/fields',function(req,res){
@@ -118,6 +160,8 @@ module.exports = function(app,express){
 	router.post('/api/admin',function(req,res){
 		res.json({success:true,username: req.decoded.username});
 	});
+
+	router.post('/api/admin')
 
 	return router;
 

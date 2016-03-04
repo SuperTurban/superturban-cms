@@ -1,23 +1,20 @@
-function Page(optionsObject,model){
+var model = require('./model.js');
 
-	var page = Object.create(model);
+function PageFactory(options){
+	var entity = Object.create(model);
+	entity.collection = 'pages';
 
-	page.collection = 'pages';
+	if(typeof options !== "object")
+		return entity;
 
-	page.app = model.app;
-	page.content = optionsObject.content; 
-	page.author = optionsObject.author; 
-
-	page.fields = optionsObject.fields;	
-
-	page.title = optionsObject.title;
-	page.slug = optionsObject.slug;
-
-	page.storables = ['author','content','title','slug'];
-
-	return page;
+	entity.content = options.content || false;
+	entity.author = options.author || false;
+	entity.persisted = false;
+	entity.fields = [];
+	entity
+	return entity;
 }
 
-module.exports=Page;
+module.exports = PageFactory;
 
 

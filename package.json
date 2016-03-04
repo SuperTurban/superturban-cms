@@ -12,5 +12,8 @@
   "dependencies": {
     "express": "^4.13.4",
     "monk": "^1.0.1"
+  },
+  "devDependencies": {
+    "should": "^8.2.2"
   }
 }
