@@ -1,20 +1,13 @@
-var model = require('./model.js');
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 
-function PageFactory(options){
-	var entity = Object.create(model);
-	entity.collection = 'pages';
-
-	if(typeof options !== "object")
-		return entity;
-
-	entity.content = options.content || false;
-	entity.author = options.author || false;
-	entity.persisted = false;
-	entity.fields = [];
-	entity
-	return entity;
-}
-
-module.exports = PageFactory;
+var pageSchema = new Schema({
+  title:  {required : true, type : String},
+  author: {type : String},
+  body:   {required : true, type : String},
+  status: {type : String},
+  slug:   {required : true, type : String, index:true, unique : true}
+}, {timestamps : { createdAt : 'created_at', updatedAt : 'updated_at'}});
 
 
+module.exports = mongoose.model('Page', pageSchema);

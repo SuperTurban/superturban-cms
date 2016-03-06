@@ -1,0 +1,104 @@
+@import 'global.scss';
+@import url(https://fonts.googleapis.com/css?family=Nunito:400,700,300);
+body{
+	background-color:$greybackground;
+	height:100%;
+	font-family: 'Nunito', sans-serif;
+}
+
+#main-nav{
+	position:fixed;
+	top:50px;
+	left:0px;
+	height:100%;
+	width:20%;
+	min-width:200px;
+}
+
+#content{
+	width:80%;
+	float:right;
+	position:relative;
+}
+
+.container{
+	box-sizing:border-box;
+	margin:10px;
+	padding:10px;
+	background-color:$whitebackground;
+}
+h1,h2,h3,h4,h5,h6{
+	margin:5px;
+}
+.entitylist{
+	margin-top:$stdmargin;
+	.entity{
+		&:nth-child(odd){
+			background-color:$whitebackgroundalternate;
+		}
+		div{
+			float:left;
+			box-sizing:border-box;
+			padding-left:5px;
+			white-space:nowrap;
+		}
+		.actions{
+			span{
+				font-weight:700;
+				cursor:pointer;
+			}
+		}
+		height:30px;
+		line-height:30px;
+		.title{
+			width:50%;
+			cursor:pointer;
+		}
+		.date{
+			width:20%;
+		}
+		.actions{
+			width:30%;
+		}
+
+		&.header{
+			background-color:$darkbackground;	
+			strong{
+				color:white;
+			}
+		}	
+
+	}
+}
+
+.button{
+	background-color: $button;
+	padding:10px 30px;
+	display:inline-block;
+	cursor:pointer;
+}
+
+
+.editor{
+	margin-bottom:$stdmargin;
+	.editorline{
+		margin-top:$stdmargin;
+		overflow:hidden;
+		.label{
+			float:left;
+			width:20%;
+		}
+		.input{
+			box-sizing:border-box;
+			float:left;
+			width:80%;
+			input{
+				box-sizing:border-box;
+				width:100%;
+				border:1px solid $primary;
+				padding:5px 5px;
+			}
+		}
+	}
+}
+

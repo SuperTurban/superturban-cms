@@ -1,6 +1,5 @@
 var mongo = require('mongodb');
-var monk = require('monk');
+var mongoose = require('mongoose');
 var config = require('./../config.js');
-var db = monk(config.db);
 
-module.exports = db;
+mongoose.connect(config.db);

@@ -12,6 +12,7 @@ module.exports = function(app,express){
 	app.use('/api/admin/',function(req, res, next) {
 
 	  var token = req.body.token;
+	  console.log(token);
 
 	  if (!token)
 	  	return res.status(403).send({success:false, message:'Permission denied!'}); 
@@ -76,8 +77,7 @@ module.exports = function(app,express){
 		post /api/pages/:id/delete	
 		post /api/pages/:id/update	
 	**/
-	var pageFactory = require('./../models/page.js');
-	var entRepo = require('./../repositories/entity-repository.js');
+
 
 	router.get('/api/pages',function(req,res){
 		var pageRepo = new entRepo(pageFactory);
@@ -123,38 +123,63 @@ module.exports = function(app,express){
 	/***********************
 	======ADMIN ROUTES======
 	***********************/
+	router.get('/makerandomuser',function(req,res){
+		var userModel = require('./../models/user.js');
+
+		var user = new userModel({
+			username : 'admin',
+			name : 'Test Admin',
+			password : 'admin',
+			email : 'admin@admin.com',
+			status : 'vefified',
+		});
+		user.save(function(user){
+			res.json(user);
+			return;
+		});
+
+	});
 
 	router.post('/api/auth', function(req, res) {
+		   var userModel = require('./../models/user.js');
+		   console.log(req.body.username);
+		   userModel.findOne(
+		   	{username : req.body.username},
+		   	function(err, user){
+		   		console.log(user);
+		   		if(err)
+		   		{
+		   			console.log(err);
+		   			res.json({'success': false, msg : 'Internal error'});	
+		   			return false;
+		   		}
+		   		if(!user){
+		   			res.json({'success': false, msg : 'User does not exist'});	
+		   			return false;
+		   		}
 
+		   		var userPayload = Object.create(null);
+		   			userPayload.username = user.username;
 
-	  var usersCollection = app.db.get('users');
+		   		if(!user.checkPassword(req.body.password)){
+		   			res.json({'success': false, msg : 'Password does not match!'});	
+		   			return false;
+		   		}
 
-	  usersCollection.findOne({username : req.body.username},{},function(e,docs){
-	  	console.log(docs);
-	  	   var user = {
-	  	   		username : docs.username,
-	  	   		id : docs._id,
-	  	   }
+		   		var token = jwt.sign(
+		   			userPayload, 
+		   			app.get('jwtsecret'),
+		   			{ expiresIn : 1200 }
+		   		);
 
-	  	   if(!user)
-	  	   		return res.json({'success': false, 'message':'No user'});	
-
-	  	   if(!req.hashing.validateHash(docs.password, docs.salt, req.body.password ))
-	  	   		return res.json({'success':false, 'message': 'wrong password'});
-
-		   var token = jwt.sign(user, app.get('jwtsecret'), {
-		         expiresIn:1200 
-		    });
-
-		    res.json({
-		      success: true,
-		      id : user.id,
-		      username : user.username,
-		      message: 'Enjoy your token!',
-		      token: token
-		    });
-
-	    });
+			    res.json({
+			      success: true,
+			      id : user.id,
+			      username : user.username,
+			      msg: 'Token created successfully!',
+			      token: token
+			    });
+		   	});			
 	});
 
 	router.post('/api/admin',function(req,res){

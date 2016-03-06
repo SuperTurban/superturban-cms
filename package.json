@@ -5,15 +5,37 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "test": "test-all"
+    "admin-front-dev": "webpack-dev-server --config=webpack.admin.config.js",
+    "build": "webpack -p",
+    "test": "testt"
   },
   "author": "Tambet Uutsalu",
   "license": "MIT",
   "dependencies": {
     "express": "^4.13.4",
-    "monk": "^1.0.1"
+    "mongoose": "^4.4.6"
   },
   "devDependencies": {
-    "should": "^8.2.2"
+    "babel-core": "^6.5.1",
+    "babel-loader": "^6.2.2",
+    "babel-plugin-transform-runtime": "^6.5.0",
+    "babel-preset-es2015": "^6.5.0",
+    "babel-runtime": "^5.8.35",
+    "file-loader": "^0.8.5",
+    "foundation-sites": "^6.1.2",
+    "html-loader": "^0.4.0",
+    "node-sass": "^3.4.2",
+    "sass-loader": "^3.1.2",
+    "should": "^8.2.2",
+    "style-loader": "^0.13.0",
+    "vue": "^1.0.16",
+    "vue-hot-reload-api": "^1.3.2",
+    "vue-html-loader": "^1.1.0",
+    "vue-loader": "^8.1.1",
+    "vue-resource": "^0.7.0",
+    "vue-router": "^0.7.10",
+    "vue-style-loader": "^1.0.0",
+    "webpack": "^1.12.10",
+    "webpack-dev-server": "^1.14.1"
   }
 }
