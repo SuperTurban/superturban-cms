@@ -3,7 +3,7 @@
 
 		<div>
 			<input type="text" v-model="username" placeholder = "username ..">
-		</div>	
+		</div>
 
 		<div>
 			<input type="password" v-model="password" placeholder = "password .. ">
@@ -17,11 +17,19 @@
 </template>
 
 <script>
+
 	module.exports = {
+		ready : function(){
+			//TODO remove after
+			this.cmsAPI.login('admin', 'admin',
+				function(){
+					this.$route.router.go('/dashboard');
+				}.bind(this));
+
+		},
 		methods : {
 			login : function(){
-				
-				this.$parent.loginManager.login(this.username, this.password,
+				this.cmsAPI.login(this.username, this.password,
 					function(){
 						this.$route.router.go('/dashboard');
 					}.bind(this));
@@ -31,9 +39,10 @@
 			return {
 				username : '',
 				password : '',
-			}	
+			}
 		}
 	}
+
 </script>
 
 

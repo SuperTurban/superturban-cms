@@ -13,6 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.13.4",
+    "medium-editor": "^5.14.4",
     "mongoose": "^4.4.6"
   },
   "devDependencies": {

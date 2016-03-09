@@ -16,7 +16,7 @@
 				<div class="entity header">
 					<div class="title">
 						<strong>Title</strong>
-					</div>	
+					</div>
 
 					<div class="date">
 						<strong>Update date</strong>
@@ -30,21 +30,21 @@
 				<div class="entity" v-for="doc in docs">
 
 					<div class="title" @click="editEntity($index)">
-						{{doc.title}}	
-					</div>	
+						{{doc.title}}
+					</div>
 
 					<div class="date">
-						{{doc.updated_at | datestring}}	
+						{{doc.updated_at | datestring}}
 					</div>
 
 					<div class="actions">
-						<span @click="editEntity($index)">Edit</span>	
+						<span @click="editEntity($index)">Edit</span>
 						<span @click="deleteEntity($index)">Delete</span>
 					</div>
 
 				</div>
 			</div>
-		</div>	
+		</div>
 	</div>
 
 </template>
@@ -53,7 +53,7 @@
 	module.exports = {
 		route : {
 			activate : function(done){
-				this.$parent.cmsAPI.getPages(function(docs){
+				this.cmsAPI.getPages(function(docs){
 					this.docs = docs;
 					console.log(docs);
 					done.next();
@@ -69,18 +69,18 @@
 		data : function(){
 			return {
 				docs : [],
-			}	
+			}
 		},
 		methods : {
 			newPageClickHandler : function(){
-				this.$route.router.go('/pages/create');	
+				this.$route.router.go('/pages/create');
 			},
 			editEntity : function(index){
 				var self = this;
 				this.$route.router.go('/pages/edit/'+this.docs[index].slug);
 			},
 			deleteEntity : function(index){
-				this.$parent.cmsAPI.deletePage(
+				this.cmsAPI.deletePage(
 					this.docs[index].slug,
 					function(){
 						this.docs.splice(index,1);
@@ -88,7 +88,7 @@
 					function(err){
 						//TODO: bad response handler
 					}
-				);		
+				);
 			}
 		}
 	}
@@ -96,11 +96,4 @@
 
 
 <style lang="sass">
-@import './../sass/global.scss';
-#main-nav{
-	background-color:$darkbackground;
-}
-h1{
-	color:black;
-}
 </style>

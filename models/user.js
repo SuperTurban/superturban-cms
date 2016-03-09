@@ -7,7 +7,6 @@ var userSchema = new Schema({
   username:  {type : String, index:true, unique: true, required: true},
   password:  String,
   name: 	 String,
-  email:     String,
   status: 	 String,
   salt: 	 String, 
   email:   	 {type : String, index:true, unique: true}
@@ -28,4 +27,4 @@ userSchema.methods.checkPassword = function(pw){
 		return false;
 }
 
-module.exports = mongoose.model('user', userSchema);
+module.exports = mongoose.model('User', userSchema);

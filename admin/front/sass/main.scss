@@ -20,7 +20,11 @@ body{
 	float:right;
 	position:relative;
 }
-
+.mediumedit{
+	background-color:white;
+	padding:10px;
+	min-height:200px;
+}
 .container{
 	box-sizing:border-box;
 	margin:10px;
@@ -62,11 +66,10 @@ h1,h2,h3,h4,h5,h6{
 		}
 
 		&.header{
-			background-color:$darkbackground;	
+			background-color:$darkbackground;
 			strong{
-				color:white;
 			}
-		}	
+		}
 
 	}
 }
@@ -78,7 +81,11 @@ h1,h2,h3,h4,h5,h6{
 	cursor:pointer;
 }
 
-
+.author{
+	font-size:12px;
+	margin-top:-5px;
+	padding-left:5px;
+}
 .editor{
 	margin-bottom:$stdmargin;
 	.editorline{
@@ -101,4 +108,3 @@ h1,h2,h3,h4,h5,h6{
 		}
 	}
 }
-

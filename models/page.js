@@ -2,8 +2,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var pageSchema = new Schema({
-  title:  {required : true, type : String},
-  author: {type : String},
+  title:  {type : String},
+  author: {required : true, type : Schema.Types.ObjectId, ref : 'User'},
   body:   {required : true, type : String},
   status: {type : String},
   slug:   {required : true, type : String, index:true, unique : true}

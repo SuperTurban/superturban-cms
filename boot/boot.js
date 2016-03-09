@@ -10,12 +10,15 @@ var jwt = require('jsonwebtoken');
 module.exports = function(parent, options){
 	
 var validateToken = function(req,res,next){
+
 	jwt.verify(req.body.token, parent.get('jwtsecret'), function(err, decoded) {      
   	    if (err) 
-    	    return res.json({ success: false, message: 'Failed to authenticate token.' });    
-    	req.decoded = decoded;    
+    	    return res.json({ success: false, message: 'Failed to authenticate token.'});    
+
+    	req.jwtdata = decoded;    
     	next();
   	});
+
 };	
   var verbose = options.verbose;
   fs.readdirSync(__dirname+'./../controllers/').forEach(function(name){

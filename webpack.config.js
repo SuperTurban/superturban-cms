@@ -19,8 +19,12 @@ module.exports = {
                 loaders: ["style", "css", "sass"]
             },
             {
-                test: /\.html$/, 
-                loader: "html-loader" 
+                test: /\.css$/,
+                loaders: ["style", "css"]
+            },
+            {
+                test: /\.html$/,
+                loader: "html-loader"
             },
             {
                 test: /\.vue$/, // a regex for matching all files that end in `.vue`
@@ -36,6 +40,10 @@ module.exports = {
             },
             {
                 test: /\.gif$/, // a regex for matching all files that end in `.vue`
+                loader: 'file-loader'   // loader to use for matched files
+            },
+            {
+                test: /\.svg$/, // a regex for matching all files that end in `.vue`
                 loader: 'file-loader'   // loader to use for matched files
             },
 

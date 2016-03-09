@@ -27,11 +27,5 @@
 
 
 <style lang="sass">
-@import './../sass/global.scss';
-#main-nav{
-	background-color:$darkbackground;
-}
-h1{
-	color:black;
-}
+
 </style>

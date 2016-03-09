@@ -12,13 +12,13 @@ router.post('/api/auth', function(req, res) {
 	  	   }
 
 	  	   if(!user)
-	  	   		return res.json({'success': false, 'message':'No user'});	
+	  	   		return res.json({'success': false, 'message':'No user'});
 
 	  	   if(!req.hashing.validateHash(docs.password, docs.salt, req.body.password ))
 	  	   		return res.json({'success':false, 'message': 'wrong password'});
 
 		   var token = jwt.sign(user, app.get('jwtsecret'), {
-		         expiresIn:1200 
+		         expiresIn:1200
 		    });
 
 		    res.json({

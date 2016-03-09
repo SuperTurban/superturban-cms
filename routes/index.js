@@ -146,7 +146,6 @@ module.exports = function(app,express){
 		   userModel.findOne(
 		   	{username : req.body.username},
 		   	function(err, user){
-		   		console.log(user);
 		   		if(err)
 		   		{
 		   			console.log(err);
@@ -158,13 +157,14 @@ module.exports = function(app,express){
 		   			return false;
 		   		}
 
-		   		var userPayload = Object.create(null);
-		   			userPayload.username = user.username;
-
 		   		if(!user.checkPassword(req.body.password)){
 		   			res.json({'success': false, msg : 'Password does not match!'});	
 		   			return false;
 		   		}
+
+		   		var userPayload = Object.create(null);
+		   			userPayload.username = user.username;
+		   			userPayload.user_id = user._id;	
 
 		   		var token = jwt.sign(
 		   			userPayload, 

@@ -1,10 +1,8 @@
-var pageModel = require('./../models/page.js');
 var fieldModel = require('./../models/field.js');
 
-var s = "2";
 
-var PageController = {
-	routeName : 'pages',
+var FieldController = {
+	routeName : 'fields',
 	authedRouteList : ['delete','update','create'],
 
 	before : function(req,res,next){
@@ -13,12 +11,12 @@ var PageController = {
 
 	list : function(req,res){
 
-		pageModel.find().exec(function(err,pages){
+		fieldModel.find().exec(function(err,fields){
 			if(err)
 				return res.json({success : false, msg: err});
 
-			if(pages)
-				return res.json({success : true, docs : pages});
+			if(fields)
+				return res.json({success : true, docs : fields});
 			else
 				return res.json({success : false, msg: 'No data'});
 		});
@@ -26,22 +24,12 @@ var PageController = {
 	},
 
 	show : function(req,res){
-		pageModel.findOne({slug: req.params.slug}).populate('author').exec(function(err,page){
-
+		fieldModel.findOne({slug: req.params.slug}).populate('author').exec(function(err,field){
 			if(err)
 				return res.json({success : false, msg: err});
 
-			if(page)
-			{
-				fieldModel.find({parent : page._id}).exec(function(err,fields){
-					if(err)
-						return res.json({success : false, msg: err});
-
-					doc = page.toObject();
-					doc.fields = fields;
-					return res.json({success : true, doc : doc});
-				});
-			}
+			if(field)
+				return res.json({success : true, doc : field});
 			else
 				return res.json({success : false, msg: 'No data'});
 		});
@@ -54,7 +42,7 @@ var PageController = {
 	},
 
 	delete : function(req,res){
-		pageModel.remove({slug: req.params.slug}).exec(function(err){
+		fieldModel.remove({key: req.params.slug}).exec(function(err){
 			if(err)
 				return res.json({success : false, msg: err});
 			return res.json({success : true});
@@ -64,39 +52,46 @@ var PageController = {
 	update : function(req,res){
 		var data = req.body;
 		delete data.token;
-		pageModel.update({slug: req.params.slug},data,function(err,result){
+
+		fieldModel.update({key: req.params.slug},data,function(err,result){
 			if(err)
 				return res.json({success : false, msg: err});
 
 			if(result)
 				return res.json({success : true});
 			else
-				return res.json({success : false, msg: 'No pagers '});
+				return res.json({success : false, msg: 'No field '});
 		});
 	},
 
 	create : function(req,res){
-
 		var response = Object.create(null);
 
-		var page = new pageModel();
-		page.body = req.body.body;
-		page.slug = req.body.slug;
-		page.title = req.body.title;
-		page.author = req.jwtdata.user_id;
+		var field = new fieldModel();
+		field.body = req.body.body;
+		field.key = req.body.key;
+		field.title = req.body.title;
+		field.author = req.jwtdata.user_id;
+		field.type = req.body.type;
 
-		page.save(function(err){
+		if(req.body.parent && req.body.parent.length > 5){
+			field.kind = req.body.parentkind;
+			field.parent = req.body.parent;
+		}
+
+		field.save(function(err,doc){
 			if(err)
 				{
 					return res.json({success:false, msg:err});
 				}
 			response.success = true;
+			response.doc = doc;
 			return res.json(response);
 		});
 
 	},
 
 
-};
+}
 
-module.exports = PageController;
+module.exports = FieldController;
