@@ -3,28 +3,17 @@ module.exports = function(app,express){
 	var router = express.Router();
 	var jwt = require('jsonwebtoken');
 
+	var trackerEventModel = require('../models/tracker-event.js');
 
-	app.use(['/install', '/api/auth'],function(req,res,next){
-		req.hashing = require('./../util/hashing');
-		next();
+
+	router.get('/api/stats',function(req, res){
+		var start = new Date();
+		trackerEventModel.getLastNDaysCallCounts(30,{}, function(err,d){
+			var dur = new Date() - start;
+			console.log('query took: ', dur);
+			return res.json({success : true, data : d});
+		})
 	});
-
-	app.use('/api/admin/',function(req, res, next) {
-
-	  var token = req.body.token;
-	  console.log(token);
-
-	  if (!token)
-	  	return res.status(403).send({success:false, message:'Permission denied!'}); 
-
-	  	jwt.verify(token, app.get('jwtsecret'), function(err, decoded) {      
-	  	    if (err) 
-	    	    return res.json({ success: false, message: 'Failed to authenticate token.' });    
-
-	    	req.decoded = decoded;    
-	    	next();
-	  	});
-	 });
 
 	/***********************
 	======TEST ROUTES=======
@@ -33,7 +22,6 @@ module.exports = function(app,express){
 	router.get('/test', function(req, res) {
 	    res.json({ title: 'Express' });
 	});
-
 
 	router.get('/install', function(req,res){
 		var username = 'admin';
@@ -50,7 +38,7 @@ module.exports = function(app,express){
 			user_pw : user_pw,
 			password : hashingResult.hash,
 			salt : hashingResult.salt,
-			permissions : ['all'], 
+			permissions : ['all'],
 		}
 
 		var usersCollection = app.db.get('users');
@@ -66,63 +54,7 @@ module.exports = function(app,express){
 	});
 
 
-	/***********************
-	======API ROUTES=======
-	***********************/
 
-	/**
-		get /api/pages/
-		get /api/pages/:id
-		post /api/pages/create
-		post /api/pages/:id/delete	
-		post /api/pages/:id/update	
-	**/
-
-
-	router.get('/api/pages',function(req,res){
-		var pageRepo = new entRepo(pageFactory);
-
-		pageRepo.getEntities(function(pages){
-			res.json(pages);
-		});
-	});
-
-	router.get('/api/pages/:key',function(req,res){
-		var pageRepo = new entRepo(pageFactory);
-
-		pageRepo.getEntityByKey(function(page){
-			res.json(page);
-		});
-	});
-
-
-	router.post('/api/pages/:key/delete',function(req,res){
-		var pageRepo = new entRepo(pageFactory);
-
-		pageRepo.getEntityByKey(function(page){
-			page.delete();
-		});
-	});
-
-
-	router.get('/api/pages/:key',function(req,res){
-		var pageRepo = new entRepo(pageFactory);
-
-		pageRepo.getEntityByKey(function(page){
-			res.json(page);
-		});
-	});
-
-	router.get('/api/fields',function(req,res){
-		  var usersCollection = app.db.get('fields');
-		  usersCollection.find({},{},function(e,docs){
-		  	res.json(docs);
-		  });
-	});
-
-	/***********************
-	======ADMIN ROUTES======
-	***********************/
 	router.get('/makerandomuser',function(req,res){
 		var userModel = require('./../models/user.js');
 
@@ -149,25 +81,25 @@ module.exports = function(app,express){
 		   		if(err)
 		   		{
 		   			console.log(err);
-		   			res.json({'success': false, msg : 'Internal error'});	
+		   			res.json({'success': false, msg : 'Internal error'});
 		   			return false;
 		   		}
 		   		if(!user){
-		   			res.json({'success': false, msg : 'User does not exist'});	
+		   			res.json({'success': false, msg : 'User does not exist'});
 		   			return false;
 		   		}
 
 		   		if(!user.checkPassword(req.body.password)){
-		   			res.json({'success': false, msg : 'Password does not match!'});	
+		   			res.json({'success': false, msg : 'Password does not match!'});
 		   			return false;
 		   		}
 
 		   		var userPayload = Object.create(null);
 		   			userPayload.username = user.username;
-		   			userPayload.user_id = user._id;	
+		   			userPayload.user_id = user._id;
 
 		   		var token = jwt.sign(
-		   			userPayload, 
+		   			userPayload,
 		   			app.get('jwtsecret'),
 		   			{ expiresIn : 1200 }
 		   		);
@@ -179,17 +111,12 @@ module.exports = function(app,express){
 			      msg: 'Token created successfully!',
 			      token: token
 			    });
-		   	});			
+		   	});
 	});
 
-	router.post('/api/admin',function(req,res){
-		res.json({success:true,username: req.decoded.username});
-	});
 
-	router.post('/api/admin')
+
 
 	return router;
 
 }
-
-

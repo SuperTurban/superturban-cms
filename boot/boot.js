@@ -1,25 +1,28 @@
 /*
+automatic routes based on controllers
 based on express mvc example boot.js
 */
 
 var express = require('express');
 var fs = require('fs');
 var jwt = require('jsonwebtoken');
+var apiTrackerMiddleware = require('../http/middleware/tracker.js');
 
 
 module.exports = function(parent, options){
-	
-var validateToken = function(req,res,next){
 
-	jwt.verify(req.body.token, parent.get('jwtsecret'), function(err, decoded) {      
-  	    if (err) 
-    	    return res.json({ success: false, message: 'Failed to authenticate token.'});    
+	var validateToken = function(req,res,next){
 
-    	req.jwtdata = decoded;    
-    	next();
-  	});
+		jwt.verify(req.body.token, parent.get('jwtsecret'), function(err, decoded) {
+	  	    if (err)
+	    	    return res.json({ success: false, message: 'Failed to authenticate token.'});
 
-};	
+	    	req.jwtdata = decoded;
+	    	next();
+	  	});
+
+	};
+
   var verbose = options.verbose;
   fs.readdirSync(__dirname+'./../controllers/').forEach(function(name){
     var obj = require('./../controllers/' + name);
@@ -69,11 +72,17 @@ var validateToken = function(req,res,next){
       handler = obj[key];
       path = prefix + path;
 
-	  if(obj.authedRouteList){
-	      	if(~obj.authedRouteList.indexOf(key)){
-	      		app[method](path, validateToken);		
-	      	}
-      }     
+
+	//auth
+	if(obj.authedRouteList){
+      	if(~obj.authedRouteList.indexOf(key)){
+      		app[method](path, validateToken);
+      	}
+      }
+
+	//api calls tracker
+	app[method](path, apiTrackerMiddleware);
+
       // before middleware support
       if (obj.before) {
         app[method](path, obj.before, handler);

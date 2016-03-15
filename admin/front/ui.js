@@ -3,8 +3,8 @@ var VueRouter = require('vue-router');
 
 Vue.use(require('vue-resource'));
 Vue.use(require('./cmslib.js'));
-Vue.use(VueRouter);
 
+Vue.use(VueRouter);
 
 var App = Vue.extend({
 	ready : function(){
@@ -16,9 +16,12 @@ var App = Vue.extend({
 /*
 Global components
 */
+
 Vue.component('main-header', require('./components/main-header.vue'));
 Vue.component('main-nav', require('./components/main-nav.vue'));
 Vue.component('field-editor', require('./components/field-editor.vue'));
+Vue.component('chartjs', require('./components/chartjs.vue'));
+
 /*
 filters
 */
@@ -44,8 +47,6 @@ window.MediumEditor.config = {
 require('./css/medium-editor.min.css');
 require('./css/flat.min.css');
 
-
-
 router.map(
 	{
 		'/' : {
@@ -67,9 +68,10 @@ router.map(
 		'/pages/edit/:slug' :{
 			component : require('./components/editor.vue')
 		},
+
 		'/settings' :{
 			component : require('./components/settings.vue')
-		}
+		},
 	}
 );
 

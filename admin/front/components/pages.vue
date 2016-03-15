@@ -55,7 +55,6 @@
 			activate : function(done){
 				this.cmsAPI.getPages(function(docs){
 					this.docs = docs;
-					console.log(docs);
 					done.next();
 				}.bind(this),
 				function(){
@@ -63,8 +62,6 @@
 					done.next();
 				});
 			},
-		},
-		init : function(){
 		},
 		data : function(){
 			return {

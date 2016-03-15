@@ -38,8 +38,28 @@ var PageController = {
 						return res.json({success : false, msg: err});
 
 					doc = page.toObject();
-					doc.fields = fields;
-					return res.json({success : true, doc : doc});
+					//find subfields
+					var field_ids = fields.map(function(elem){
+						return {parent : elem._id};
+					});
+
+					var storeFields = [];
+					fieldModel.find({$or : field_ids},function(err,subfields){
+						fields.forEach(function(field){
+							var sField = field.toObject();
+							sField.subfields = [];
+							subfields.forEach(function(subField){
+								if(sField._id == subField.parent)
+								console.log(sField, subField);
+									sField.subfields.push(subField);
+								});
+							storeFields.push(sField);
+						});
+
+						doc.fields = storeFields;
+						return res.json({success : true, doc : doc});
+					});
+
 				});
 			}
 			else
@@ -98,5 +118,7 @@ var PageController = {
 
 
 };
+
+
 
 module.exports = PageController;

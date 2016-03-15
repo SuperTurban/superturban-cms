@@ -29,6 +29,20 @@ var cmsAPI = function(){
 		return data;
 	};
 
+	//calls to tracker
+	this.getLast30DaysCount = function(successHandler,errorHandler){
+		this.vue.http.get('/api/stats')
+		.then(function(resp){
+			if(resp.data.success){
+				successHandler(resp.data.data);
+			}
+			else{
+				errorHandler(resp)
+			}
+		},function(err){
+			errorHandler(err);
+		});
+	}
 	//calls to resources
 	this.createPage = function(data,successHandler,errorHandler){
 		var data = this.addToken(data);
